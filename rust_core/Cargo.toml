@@ -1,0 +1,11 @@
+[package]
+name = "iris_rust_audio"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance audio ring buffer and DSP processor for IRIS Virtual Assistant"
+
+[lib]
+name = "iris_rust_audio"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
