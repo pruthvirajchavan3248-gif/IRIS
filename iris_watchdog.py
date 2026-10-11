@@ -75,19 +75,23 @@ def run_supervisor():
             exit_code = proc.wait()
             log(f"IRIS process exited with code {exit_code}")
 
-            # If user explicitly closed IRIS (clean exit code 0 e.g. via 'Exit IRIS' menu or 'alvida'),
-            # we respect their decision and terminate the supervisor.
-            if exit_code == 0:
-                log("Clean exit detected (Code 0). Watchdog stopping.")
+            # Check if stop was explicitly requested via stop_iris.bat (flag file)
+            stop_flag = BASE_DIR / ".stop_iris"
+            if stop_flag.exists():
+                log("Explicit stop flag detected. Watchdog stopping.")
+                try:
+                    stop_flag.unlink()
+                except Exception:
+                    pass
                 break
 
-            # If crash or non-zero exit, automatically restart after 3 seconds
-            log(f"Unexpected termination (Code {exit_code}). Auto-restarting in 3 seconds...")
-            time.sleep(3)
+            # Always auto-restart IRIS 24/7 so it runs all the time without interruption
+            log(f"IRIS process terminated (Code {exit_code}). Auto-restarting in 2 seconds to keep it on all time...")
+            time.sleep(2)
 
         except Exception as e:
-            log(f"Error in supervisor loop: {e}. Retrying in 5 seconds...")
-            time.sleep(5)
+            log(f"Error in supervisor loop: {e}. Retrying in 3 seconds...")
+            time.sleep(3)
 
 
 if __name__ == "__main__":
